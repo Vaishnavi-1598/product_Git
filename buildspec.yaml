@@ -8,7 +8,7 @@ phases:
       - mvn clean install
       - echo "Logging in to Amazon ECR..."
       - aws --version
-      - REPOSITORY_URI=926554300215.dkr.ecr.us-east-1.amazonaws.com/contact-app-repo
+      - REPOSITORY_URI=639799576075.dkr.ecr.us-east-1.amazonaws.com/product-app
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URI
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
@@ -25,7 +25,12 @@ phases:
       - docker push $REPOSITORY_URI:latest
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - echo "Writing image definitions file..."
-      - printf '[{"name":"contact-app-repo","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - printf '[{"name":"course-service","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - echo "Writing image definitions file..."
+      #add your container name
+      -DOCKER_CONTAINER_NAME=product-app
+      - printf '[{"name":"%s","imageUri":"%s"}]' $DOCKER_CONTAINER_NAME $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      -echo $DOCKER_CONTAINER_NAME
       - echo "Printing imagedefinitions.json content:"
       - cat imagedefinitions.json
 
